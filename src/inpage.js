@@ -5,17 +5,20 @@ import PostScore from './components/PostScore';
 import CommentScore from './components/CommentScore';
 import bases from 'bases';
 import * as unique from 'array-unique';
-import Registry from 'contracts/Registry';
 import * as Promise from 'bluebird';
 
-setNetwork()
+
+store.dispatch("setWeb3")
+  .then(()=>store.dispatch("setContracts"))
+  .then(setNetwork)
   .then(()=>console.log(store.state.network))
   .then(()=>setAccount())
-  .then(poll)
-  .then(()=>setInterval(poll, 2000))
   .then(()=>preparePostScores())
   .then(()=>prepareCommentScores())
-  .then(()=>prepareUsers());
+  .then(()=>prepareUsers())
+  .then(poll)
+  .then(()=>setInterval(poll, 2000))
+  .catch(console.warn);
 
 function preparePostScores(){
   let idPrefix = "thing_t3";
@@ -57,7 +60,8 @@ function prepareUsers(){
   let $authors = document.querySelectorAll('.thing a[href*="reddit.com/user/"]');
   // const usernames = noDupe([...$authors].map(a=>a.innerText));
   let usernames = unique([...$authors].map(a=>a.innerText));
-  console.log(usernames);
+  // console.log(usernames);
+  let Registry = store.state.contracts.Registry;
   return Promise.map(usernames, username=>{
     return Registry.methods.getOwner(web3.utils.asciiToHex(username)).call().then(address=>{
       if (address !== "0x0000000000000000000000000000000000000000") {

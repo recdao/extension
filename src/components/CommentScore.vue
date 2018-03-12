@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import ContentScore from 'contracts/ContentScore';
 import Logo from './Logo';
 
 export default {
@@ -36,12 +35,13 @@ export default {
   },
   computed: {
     account(){ return this.$store.state.account; },
-    blockNum(){ return this.$store.state.blockNum; }
+    blockNum(){ return this.$store.state.blockNum; },
+    ContentScore(){ return this.$store.state.contracts.ContentScore; }
   },
   methods: {
     vote(prefId){
       console.log(typeof prefId)
-      ContentScore.methods.vote(1, this.id, prefId).send({from: this.account, gas: 200000})
+      this.ContentScore.methods.vote(1, this.id, prefId).send({from: this.account, gas: 200000})
         .then(console.log);
       // this.$store.dispatch("addTransaction", {
       //   label: `Vote ${prefId} @prop:${this.proposal.id}`,
@@ -50,7 +50,7 @@ export default {
       // });
     },
     getScore(){
-      ContentScore.methods.commentScores(this.id).call()
+      this.ContentScore.methods.commentScores(this.id).call()
         .then(scores=>{
           this.score = scores.numUp - scores.numDown;
           // this.score = this.scoreUp - this.scoreDown;
