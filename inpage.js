@@ -56408,6 +56408,8 @@ __WEBPACK_IMPORTED_MODULE_1__store__["a" /* default */].dispatch("setWeb3").then
 }).then(function () {
   return setAccount();
 }).then(function () {
+  return styleOverrides();
+}).then(function () {
   return preparePostScores();
 }).then(function () {
   return prepareCommentScores();
@@ -56416,6 +56418,12 @@ __WEBPACK_IMPORTED_MODULE_1__store__["a" /* default */].dispatch("setWeb3").then
 }).then(poll).then(function () {
   return setInterval(poll, 2000);
 }).catch(console.warn);
+
+function styleOverrides() {
+  var styles = document.createElement('style');
+  styles.innerText = '\n.midcol {\n  overflow: visible;\n}';
+  document.body.appendChild(styles);
+}
 
 function preparePostScores() {
   var idPrefix = "thing_t3";
@@ -56442,7 +56450,8 @@ function prepareCommentScores() {
     var id = __WEBPACK_IMPORTED_MODULE_5_bases___default.a.fromBase36(idB36);
     var span = document.createElement('span');
     var $tagline = $comment.getElementsByClassName('tagline')[0];
-    $tagline.insertBefore(span, $tagline.getElementsByTagName('time')[0]);
+    $tagline.appendChild(span);
+    // $tagline.insertBefore(span, $tagline.getElementsByTagName('time')[0]);
     var score = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */](Object.assign({}, __WEBPACK_IMPORTED_MODULE_4__components_CommentScore___default.a, {
       store: __WEBPACK_IMPORTED_MODULE_1__store__["a" /* default */],
       propsData: { id: id }

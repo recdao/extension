@@ -13,12 +13,22 @@ store.dispatch("setWeb3")
   .then(setNetwork)
   .then(()=>console.log(store.state.network))
   .then(()=>setAccount())
+  .then(()=>styleOverrides())
   .then(()=>preparePostScores())
   .then(()=>prepareCommentScores())
   .then(()=>prepareUsers())
   .then(poll)
   .then(()=>setInterval(poll, 2000))
   .catch(console.warn);
+
+function styleOverrides(){
+  let styles = document.createElement('style');
+  styles.innerText = `
+.midcol {
+  overflow: visible;
+}`;
+  document.body.appendChild(styles);
+}
 
 function preparePostScores(){
   let idPrefix = "thing_t3";
@@ -46,7 +56,8 @@ function prepareCommentScores(){
     let id = bases.fromBase36(idB36);
     let span = document.createElement('span');
     let $tagline = $comment.getElementsByClassName('tagline')[0];
-    $tagline.insertBefore(span, $tagline.getElementsByTagName('time')[0]);
+    $tagline.appendChild(span);
+    // $tagline.insertBefore(span, $tagline.getElementsByTagName('time')[0]);
     const score = new Vue({
       ...CommentScore,
       store,
