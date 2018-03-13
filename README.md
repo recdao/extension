@@ -4,7 +4,7 @@
 
 1. Download the zip of the [latest release](https://github.com/RECDAO/extension/releases)
 2. Unzip the archive somewhere
-3. Open your browser extensions page (`chrome://extensions/` for Chrome)
+3. Open your browser extensions page (`chrome://extensions` for Chrome)
 4. Check "Developer mode"
 5. Click the button "Load unpacked extension..."
 6. Navigate to the unzipped extension folder and click "Open"
