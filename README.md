@@ -2,7 +2,7 @@
 
 ### How to Install
 
-1. Download the zip of the [latest release](releases)
+1. Download the zip of the [latest release](https://github.com/RECDAO/extension/releases)
 2. Unzip the archive somewhere
 3. Open your browser extensions page ([here](chrome://extensions/) for Chrome)
 4. Check "Developer mode"
