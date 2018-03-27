@@ -35240,7 +35240,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var _this = this;
 
       this.ContentScore.methods.postScores(this.id).call().then(function (scores) {
-        console.log(scores);
+        // console.log(scores)
         _this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
         _this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
       });

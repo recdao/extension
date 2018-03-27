@@ -50,7 +50,7 @@ export default {
     getScore(){
       this.ContentScore.methods.postScores(this.id).call()
         .then(scores=>{
-          console.log(scores)
+          // console.log(scores)
           this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
           this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
         })
