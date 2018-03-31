@@ -3,23 +3,35 @@ import store from './store';
 import { NETWORKS } from './constants.json';
 import PostScore from './components/PostScore';
 import CommentScore from './components/CommentScore';
+import Tip from './components/Tip';
 import bases from 'bases';
 import * as unique from 'array-unique';
 import * as Promise from 'bluebird';
 
+const start = async () => {
+  let hasWeb3 = await store.dispatch("setWeb3");
+  if(!hasWeb3) return;
+  let network = await store.dispatch("setNetwork");
+  if(![NETWORKS.RINKEBY, NETWORKS.OTHER].includes(network)) return;
+  store.dispatch("setContracts");
+  await store.dispatch("setDecimals");
+  let defaultAccount = await setDefaultAccount();
+  if(defaultAccount){
+    await store.dispatch("setAllowance");
+    await store.dispatch("setBalance");
+  }
+  styleOverrides();
+  mountTipper();
+  preparePostScores();
+  prepareCommentScores();
+  await prepareUsers();
+  poll();
+  setInterval(poll, 2000);
+}
 
-store.dispatch("setWeb3")
-  .then(()=>store.dispatch("setContracts"))
-  .then(setNetwork)
-  .then(()=>console.log(store.state.network))
-  .then(()=>setAccount())
-  .then(()=>styleOverrides())
-  .then(()=>preparePostScores())
-  .then(()=>prepareCommentScores())
-  .then(()=>prepareUsers())
-  .then(poll)
-  .then(()=>setInterval(poll, 2000))
-  .catch(console.warn);
+// window.store = store;
+
+start();
 
 function styleOverrides(){
   let styles = document.createElement('style');
@@ -30,30 +42,48 @@ function styleOverrides(){
   document.body.appendChild(styles);
 }
 
+function mountTipper(){
+  let div = document.createElement('div');
+  document.body.appendChild(div);
+  const tipper = new Vue({
+    ...Tip,
+    store,
+    propsData: {}
+  })
+  tipper.$mount(div);
+}
+
+window.bases = bases;
+
 function preparePostScores(){
-  let idPrefix = "thing_t3";
+  let idPrefix = "thing_t3_";
   let $posts = document.querySelectorAll(`[id^='${idPrefix}']`);
   $posts.forEach(($post, idx) => {
-    let idB36 = $post.id.replace(idPrefix, "");
-    let id = bases.fromBase36(idB36);
+    let id = $post.id.replace(idPrefix, "");
+    // let idB36 = $post.id.replace(idPrefix, "");
+    // let id = bases.fromBase36(idB36);
+    // console.log(id)
+    let author = $post.querySelectorAll(".author")[0].innerHTML;
     let span = document.createElement('span');
     let $redditScore = $post.getElementsByClassName('midcol')[0];
     $redditScore.insertBefore(span, $redditScore.getElementsByClassName('arrow down')[0]);
     const score = new Vue({
       ...PostScore,
       store,
-      propsData: {id}
+      propsData: {id, author}
     })
     score.$mount(span);
   });
 }
 
 function prepareCommentScores(){
-  let idPrefix = "thing_t1";
+  let idPrefix = "thing_t1_";
   let $comments = document.querySelectorAll(`[id^='${idPrefix}']`);
   $comments.forEach(($comment, idx) => {
-    let idB36 = $comment.id.replace(idPrefix, "");
-    let id = bases.fromBase36(idB36);
+    let id = $comment.id.replace(idPrefix, "");
+    // let idB36 = $comment.id.replace(idPrefix, "");
+    // let id = bases.fromBase36(idB36);
+    let author = $comment.querySelectorAll(".author")[0].innerHTML;
     let span = document.createElement('span');
     let $tagline = $comment.getElementsByClassName('tagline')[0];
     $tagline.appendChild(span);
@@ -61,13 +91,13 @@ function prepareCommentScores(){
     const score = new Vue({
       ...CommentScore,
       store,
-      propsData: {id}
+      propsData: {id, author}
     })
     score.$mount(span);
   });
 }
 
-function prepareUsers(){
+async function prepareUsers(){
   let $authors = document.querySelectorAll('.thing a[href*="reddit.com/user/"]');
   // const usernames = noDupe([...$authors].map(a=>a.innerText));
   let usernames = unique([...$authors].map(a=>a.innerText));
@@ -83,29 +113,12 @@ function prepareUsers(){
   });
 }
 
-function setNetwork(){
-  return window.web3.eth.net.getId()
-    .then(id=>{
-      switch (id) {
-        case 1:
-          return store.commit("SET_NETWORK", NETWORKS.MAIN);
-        case 2:
-          return store.commit("SET_NETWORK", NETWORKS.MORDEN);
-        case 3:
-          return store.commit("SET_NETWORK", NETWORKS.ROPSTEN);
-        case 4:
-          return store.commit("SET_NETWORK", NETWORKS.RINKEBY);
-        case 42:
-          return store.commit("SET_NETWORK", NETWORKS.KOVAN);
-        default:
-          return store.commit("SET_NETWORK", NETWORKS.OTHER);
-      }
-    });
-}
-
-function setAccount(){
+async function setDefaultAccount(){
   return web3.eth.getAccounts()
-    .then(accounts=>store.dispatch("setAccount", accounts[0]));
+    .then(accounts=>{
+      store.dispatch("setAccount", accounts[0])
+      return accounts[0];
+    });
 }
 
 function poll(){
