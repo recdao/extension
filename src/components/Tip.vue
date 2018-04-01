@@ -87,7 +87,7 @@ export default {
           break;
         case "mETH":
           let tip = web3.utils.toWei(this.amount.toString(), "finney");
-          return await Tipper.methods.tipEther(
+          return await this.Tipper.methods.tipEther(
             this.tipContentType.toString(),
             bases.fromBase36(this.tipId).toString(),
             web3.utils.toHex(this.tipRecipient),
