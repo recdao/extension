@@ -91,7 +91,7 @@ export default {
             this.tipContentType.toString(),
             bases.fromBase36(this.tipId).toString(),
             web3.utils.toHex(this.tipRecipient),
-          ).send({from: coinbase, value: tip, gas: 100000});
+          ).send({from: this.account, value: tip, gas: 100000});
           break;
       }
     },
