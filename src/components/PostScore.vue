@@ -6,11 +6,13 @@
     v-on:mouseout="active = false">
     <!-- <logo :height="12" style="position: relative; top: 2px;" /> -->
     {{score}}
-    <div v-if="active" style="padding: 8px 0; position: absolute; left: 100%; top: 100%; background-color: white; z-index: 100; transform: translateY(-70%); width: 60px; border: 1px solid black;">
-      <div class="arrow up" v-on:click.stop="vote(1)"></div>
-      <div class="score" style="display: block">{{score}} / {{karmaScore}}</div>
-      <div class="arrow down" v-on:click.stop="vote(2)"></div>
-      <button v-on:click="tipOpen" style="margin-top: 6px;">Tip</button>
+    <div v-if="active" style="display: flex; align-items: center; padding: 0.25rem 1rem; position: absolute; left: 100%; top: 100%; background-color: white; z-index: 100; transform: translateY(-70%); border: 1px solid black;">
+      <div style="margin-right: 0.5rem;">
+        <div class="arrow up" v-on:click.stop="vote(1)"></div>
+        <div class="score" style="display: block; white-space: nowrap;">{{score}} / {{karmaScore}}</div>
+        <div class="arrow down" v-on:click.stop="vote(2)"></div>
+      </div>
+      <button v-on:click="tipOpen">Tip</button>
     </div>
   </div>
 </template>

@@ -35233,6 +35233,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
 
 
 
@@ -35351,6 +35353,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Logo___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Logo__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bases__ = __webpack_require__(/*! bases */ 20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bases___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bases__);
+//
+//
 //
 //
 //
@@ -50942,14 +50946,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v(" "), (_vm.active) ? _c('span', [_vm._v(_vm._s(_vm.score))]) : _vm._e(), _vm._v(" "), (_vm.over) ? _c('div', {
     staticStyle: {
-      "padding": "8px 0",
+      "display": "flex",
+      "align-items": "center",
+      "padding": "0.25rem 1rem",
       "position": "absolute",
       "left": "100%",
       "top": "0",
       "background-color": "white",
       "z-index": "100",
-      "width": "60px",
       "border": "1px solid black"
+    }
+  }, [_c('div', {
+    staticStyle: {
+      "margin-right": "0.5rem"
     }
   }, [_c('div', {
     staticClass: "arrow up",
@@ -50967,11 +50976,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.vote(2)
       }
     }
-  }), _vm._v(" "), _c('button', {
-    staticStyle: {
-      "margin": "8px auto 0",
-      "display": "block"
-    },
+  })]), _vm._v(" "), _c('button', {
     on: {
       "click": _vm.tipOpen
     }
@@ -51171,15 +51176,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("\n  " + _vm._s(_vm.score) + "\n  "), (_vm.active) ? _c('div', {
     staticStyle: {
-      "padding": "8px 0",
+      "display": "flex",
+      "align-items": "center",
+      "padding": "0.25rem 1rem",
       "position": "absolute",
       "left": "100%",
       "top": "100%",
       "background-color": "white",
       "z-index": "100",
       "transform": "translateY(-70%)",
-      "width": "60px",
       "border": "1px solid black"
+    }
+  }, [_c('div', {
+    staticStyle: {
+      "margin-right": "0.5rem"
     }
   }, [_c('div', {
     staticClass: "arrow up",
@@ -51192,7 +51202,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }), _vm._v(" "), _c('div', {
     staticClass: "score",
     staticStyle: {
-      "display": "block"
+      "display": "block",
+      "white-space": "nowrap"
     }
   }, [_vm._v(_vm._s(_vm.score) + " / " + _vm._s(_vm.karmaScore))]), _vm._v(" "), _c('div', {
     staticClass: "arrow down",
@@ -51202,10 +51213,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.vote(2)
       }
     }
-  }), _vm._v(" "), _c('button', {
-    staticStyle: {
-      "margin-top": "6px"
-    },
+  })]), _vm._v(" "), _c('button', {
     on: {
       "click": _vm.tipOpen
     }

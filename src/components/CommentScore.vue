@@ -6,10 +6,12 @@
     v-on:mouseout="over = false">
     <logo :height="12" style="position: relative; top: 2px;" />
     <span v-if="active">{{score}}</span>
-    <div v-if="over" style="padding: 8px 0; position: absolute; left: 100%; top: 0; background-color: white; z-index: 100; width: 60px; border: 1px solid black;">
-      <div class="arrow up" v-on:click.stop="vote(1)"></div>
-      <div class="arrow down" v-on:click.stop="vote(2)"></div>
-      <button v-on:click="tipOpen" style="margin: 8px auto 0; display: block;">Tip</button>
+    <div v-if="over" style="display: flex; align-items: center; padding: 0.25rem 1rem; position: absolute; left: 100%; top: 0; background-color: white; z-index: 100; border: 1px solid black;">
+      <div style="margin-right: 0.5rem;">
+        <div class="arrow up" v-on:click.stop="vote(1)"></div>
+        <div class="arrow down" v-on:click.stop="vote(2)"></div>
+      </div>
+      <button v-on:click="tipOpen">Tip</button>
     </div>
   </span>
 </template>
