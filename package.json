@@ -49,6 +49,7 @@
     "bases": "^0.2.1",
     "bluebird": "^3.5.1",
     "csvtojson": "^1.1.9",
+    "decamelize": "^2.0.0",
     "ethereum-bip44": "^2.1.3",
     "ethereumjs-util": "^5.1.2",
     "json2csv": "^3.11.5",
