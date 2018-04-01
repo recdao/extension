@@ -13,6 +13,8 @@ Vue.use(Vuex)
 
 const state = {
   account: null,
+  tipContentType: null,
+  tipContentUrl: null,
   tipId: null,
   tipOpen: false,
   tipRecipient: null,

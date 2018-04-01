@@ -29,7 +29,7 @@ const start = async () => {
   setInterval(poll, 2000);
 }
 
-// window.store = store;
+window.vuexStore = store;
 
 start();
 
@@ -63,14 +63,15 @@ function preparePostScores(){
     // let idB36 = $post.id.replace(idPrefix, "");
     // let id = bases.fromBase36(idB36);
     // console.log(id)
-    let author = $post.querySelectorAll(".author")[0].innerHTML;
+    let author = $post.getAttribute("data-author");
+    let url = $post.getAttribute("data-permalink");
     let span = document.createElement('span');
     let $redditScore = $post.getElementsByClassName('midcol')[0];
     $redditScore.insertBefore(span, $redditScore.getElementsByClassName('arrow down')[0]);
     const score = new Vue({
       ...PostScore,
       store,
-      propsData: {id, author}
+      propsData: {id, author, url}
     })
     score.$mount(span);
   });
@@ -83,7 +84,8 @@ function prepareCommentScores(){
     let id = $comment.id.replace(idPrefix, "");
     // let idB36 = $comment.id.replace(idPrefix, "");
     // let id = bases.fromBase36(idB36);
-    let author = $comment.querySelectorAll(".author")[0].innerHTML;
+    let author = $comment.getAttribute("data-author");
+    let url = $comment.getAttribute("data-permalink");
     let span = document.createElement('span');
     let $tagline = $comment.getElementsByClassName('tagline')[0];
     $tagline.appendChild(span);
@@ -91,7 +93,7 @@ function prepareCommentScores(){
     const score = new Vue({
       ...CommentScore,
       store,
-      propsData: {id, author}
+      propsData: {id, author, url}
     })
     score.$mount(span);
   });

@@ -1,7 +1,7 @@
 <template>
   <span
     class="score"
-    style="display: inline; position: relative;"
+    style="display: inline; position: relative; margin-left: 2px;"
     v-on:mouseover="active = true; over = true"
     v-on:mouseout="over = false">
     <logo :height="12" style="position: relative; top: 2px;" />
@@ -9,6 +9,7 @@
     <div v-if="over" style="padding: 8px 0; position: absolute; left: 100%; top: 0; background-color: white; z-index: 100; width: 60px; border: 1px solid black;">
       <div class="arrow up" v-on:click.stop="vote(1)"></div>
       <div class="arrow down" v-on:click.stop="vote(2)"></div>
+      <button v-on:click="tipOpen" style="margin: 8px auto 0; display: block;">Tip</button>
     </div>
   </span>
 </template>
@@ -23,7 +24,8 @@ export default {
   },
   props: {
     id: String,
-    author: String
+    author: String,
+    url: String
   },
   data(){
     return {
@@ -41,6 +43,14 @@ export default {
     ContentScore(){ return this.$store.state.contracts.ContentScore; }
   },
   methods: {
+    tipOpen(){
+      console.log(this.id);
+      this.$store.commit("SET_TIP_CONTENT_TYPE", 1);
+      this.$store.commit("SET_TIP_ID", this.id);
+      this.$store.commit("SET_TIP_RECIPIENT", this.author);
+      this.$store.commit("SET_TIP_CONTENT_URL", this.url);
+      this.$store.commit("SET_TIP_OPEN", true);
+    },
     vote(prefId){
       console.log(typeof prefId)
       this.ContentScore.methods.vote(1, bases.fromBase36(this.id), prefId).send({from: this.account, gas: 200000})
