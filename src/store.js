@@ -6,6 +6,7 @@ import bases from 'bases';
 import { NETWORKS } from './constants.json';
 import RegistryArtifacts from 'artifacts/Registry.json';
 import TokenArtifacts from 'artifacts/Token.json';
+import ContentDAOArtifacts from 'artifacts/ContentDAO.json';
 import ContentScoreArtifacts from 'artifacts/ContentScore.json';
 import TipperArtifacts from 'artifacts/Tipper.json';
 
@@ -77,7 +78,7 @@ const actions = {
     return Token.methods.balanceOf(state.account).call().then(res=>commit("SET_BALANCE", res/Math.pow(10, state.decimals)));
   },
   setContracts ({commit, dispatch, state}) {
-    let contracts = [ContentScoreArtifacts, TokenArtifacts, RegistryArtifacts, TipperArtifacts].reduce((prev, artifacts)=>{
+    let contracts = [ContentDAOArtifacts, ContentScoreArtifacts, TokenArtifacts, RegistryArtifacts, TipperArtifacts].reduce((prev, artifacts)=>{
       prev[artifacts.contractName] = new web3.eth.Contract(artifacts.abi, artifacts.networks["4"].address);
       return prev;
     }, {});

@@ -13,6 +13,7 @@
         <div class="arrow down" v-on:click.stop="vote(2)"></div>
       </div>
       <button v-on:click="tipOpen">Tip</button>
+      <button v-if="!marketEnded" v-on:click="stake">Stake</button>
     </div>
   </div>
 </template>
@@ -33,8 +34,17 @@ export default {
   data(){
     return {
       active: null,
+      karmaScore: 0,
       score: 0,
-      karmaScore: 0
+      marketStage: null,
+      marketEnded: null,
+      marketLiked: null,
+      marketStake: null,
+      marketTotal: null,
+      marketStartedAt: null,
+      marketTrack: null,
+      marketFeePaid: null,
+      marketVoted: null,
     }
   },
   computed: {
@@ -42,6 +52,8 @@ export default {
     allowance(){ return this.$store.state.allowance; },
     // redditId(){ return bases.toBase36(this.$store.state.tipId); },
     blockNum(){ return this.$store.state.blockNum; },
+    decimals(){ return this.$store.state.decimals; },
+    ContentDAO(){ return this.$store.state.contracts.ContentDAO; },
     ContentScore(){ return this.$store.state.contracts.ContentScore; }
   },
   methods: {
@@ -63,18 +75,39 @@ export default {
       //   success: ()=>this.$store.dispatch("setProposals")
       // });
     },
-    getScore(){
-      // console.log(this.id, bases.fromBase36(this.id))
-      this.ContentScore.methods.postScores(bases.fromBase36(this.id)).call()
-        .then(scores=>{
-          // console.log(scores)
-          this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
-          this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
-        })
+    async getScore(){
+      let scores = await this.ContentScore.methods.postScores(bases.fromBase36(this.id)).call();
+      this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
+      this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
+    },
+    async syncMarket () {
+      let idBase10 = bases.fromBase36(this.id);
+      let market = await this.ContentDAO.methods.getPost(idBase10).call({from: this.account});
+      let stage = parseInt(market.stage);
+      if(stage) {
+        this.marketStage = stage;
+        this.marketEnded = market.ended;
+        this.marketFeePaid = market.feePaid;
+        this.marketLiked = market.liked;
+        this.marketStake = {
+          false: parseInt(market.stakeDown)/Math.pow(10, this.decimals),
+          true: parseInt(market.stakeUp)/Math.pow(10, this.decimals)
+        };
+        this.marketTotal = {
+          false: parseInt(market.totalDown)/Math.pow(10, this.decimals),
+          true: parseInt(market.totalUp)/Math.pow(10, this.decimals)
+        };
+        this.marketStartedAt = parseInt(market.startedAt);
+        this.marketTrack = parseInt(market.track);
+        this.marketVoted = market.voted;
+      } else {
+        this.marketStage = stage;
+      }
     }
   },
-  created(){
-    this.getScore();
+  async created(){
+    await this.getScore();
+    await this.syncMarket();
   }
 }
 </script>
