@@ -7,8 +7,10 @@ import Tip from './components/Tip';
 import bases from 'bases';
 import * as unique from 'array-unique';
 import * as Promise from 'bluebird';
+let started = false;
 
 const start = async () => {
+  started = true;
   let hasWeb3 = await store.dispatch("setWeb3");
   if(!hasWeb3) return;
   let network = await store.dispatch("setNetwork");
@@ -31,7 +33,17 @@ const start = async () => {
 
 window.vuexStore = store;
 
-start();
+if (document.visibilityState == "visible") {
+  start();
+} else {
+  document.addEventListener('visibilitychange', handleVisibilityChange, false);
+}
+
+function handleVisibilityChange() {
+  if (!started && document.visibilityState == "visible") {
+    start();
+  }
+}
 
 function styleOverrides(){
   let styles = document.createElement('style');

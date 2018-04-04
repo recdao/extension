@@ -13,22 +13,27 @@ Vue.use(Vuex)
 
 const state = {
   account: null,
+  allowance: 0,
+  balance: null,
+  blockNum: null,
+  contracts: {},
+  decimals: null,
+  network: null,
+  posts: {},
+  tip: {},
   tipContentType: null,
   tipContentUrl: null,
   tipId: null,
   tipOpen: false,
   tipRecipient: null,
-  allowance: 0,
-  balance: null,
-  blockNum: null,
-  decimals: null,
-  network: null,
   username: null,
-  contracts: {},
   web3: null
 }
 
 const mutations = {
+  SET_POST (state, post) {
+    Vue.set(state.posts, post.id, post);
+  }
 }
 
 for (var key in state) {
@@ -102,6 +107,32 @@ const actions = {
             return NETWORKS.OTHER;
         }
       });
+  },
+  async syncPost ({ commit, state }, id) {
+    let {ContentDAO} = state.contracts;
+    let idBase10 = bases.fromBase36(id);
+    let p = await ContentDAO.methods.getPost(idBase10).call({from: state.account});
+    let stage = parseInt(p.stage);
+    if(stage) {
+      let post = Object.assign({
+        stage,
+        ended: p.ended,
+        feePaid: p.feePaid,
+        liked: p.liked,
+        stake: {
+          false: parseInt(p.stakeDown)/Math.pow(10, state.decimals),
+          true: parseInt(p.stakeUp)/Math.pow(10, state.decimals)
+        },
+        total: {
+          false: parseInt(p.totalDown)/Math.pow(10, state.decimals),
+          true: parseInt(p.totalUp)/Math.pow(10, state.decimals)
+        },
+        startedAt: parseInt(p.startedAt),
+        track: parseInt(p.track),
+        voted: p.voted,
+      }, state.posts[id]);
+      commit("SET_POST", post);
+    }
   },
   setUsername ({ commit, dispatch, state }) {
     let {Registry} = state.contracts;

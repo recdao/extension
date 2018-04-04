@@ -33830,22 +33830,28 @@ __WEBPACK_IMPORTED_MODULE_1_vue__["a" /* default */].use(__WEBPACK_IMPORTED_MODU
 
 var state = {
   account: null,
+  allowance: 0,
+  balance: null,
+  blockNum: null,
+  contracts: {},
+  decimals: null,
+  network: null,
+  posts: {},
+  tip: {},
   tipContentType: null,
   tipContentUrl: null,
   tipId: null,
   tipOpen: false,
   tipRecipient: null,
-  allowance: 0,
-  balance: null,
-  blockNum: null,
-  decimals: null,
-  network: null,
   username: null,
-  contracts: {},
   web3: null
 };
 
-var mutations = {};
+var mutations = {
+  SET_POST: function SET_POST(state, post) {
+    __WEBPACK_IMPORTED_MODULE_1_vue__["a" /* default */].set(state.posts, post.id, post);
+  }
+};
 
 for (var key in state) {
   var defaultSetMutation = 'SET_' + __WEBPACK_IMPORTED_MODULE_4_decamelize___default()(key).toUpperCase();
@@ -33974,10 +33980,64 @@ var actions = {
       }
     });
   },
-  setUsername: function setUsername(_ref9) {
-    var commit = _ref9.commit,
-        dispatch = _ref9.dispatch,
-        state = _ref9.state;
+  syncPost: function () {
+    var _ref10 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__home_carl_Projects_recdao_extension_node_modules_babel_runtime_regenerator___default.a.mark(function _callee2(_ref9, id) {
+      var commit = _ref9.commit,
+          state = _ref9.state;
+      var ContentDAO, idBase10, p, stage, post;
+      return __WEBPACK_IMPORTED_MODULE_0__home_carl_Projects_recdao_extension_node_modules_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              ContentDAO = state.contracts.ContentDAO;
+              idBase10 = __WEBPACK_IMPORTED_MODULE_5_bases___default.a.fromBase36(id);
+              _context2.next = 4;
+              return ContentDAO.methods.getPost(idBase10).call({ from: state.account });
+
+            case 4:
+              p = _context2.sent;
+              stage = parseInt(p.stage);
+
+              if (stage) {
+                post = Object.assign({
+                  stage: stage,
+                  ended: p.ended,
+                  feePaid: p.feePaid,
+                  liked: p.liked,
+                  stake: {
+                    false: parseInt(p.stakeDown) / Math.pow(10, state.decimals),
+                    true: parseInt(p.stakeUp) / Math.pow(10, state.decimals)
+                  },
+                  total: {
+                    false: parseInt(p.totalDown) / Math.pow(10, state.decimals),
+                    true: parseInt(p.totalUp) / Math.pow(10, state.decimals)
+                  },
+                  startedAt: parseInt(p.startedAt),
+                  track: parseInt(p.track),
+                  voted: p.voted
+                }, state.posts[id]);
+
+                commit("SET_POST", post);
+              }
+
+            case 7:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    function syncPost(_x3, _x4) {
+      return _ref10.apply(this, arguments);
+    }
+
+    return syncPost;
+  }(),
+  setUsername: function setUsername(_ref11) {
+    var commit = _ref11.commit,
+        dispatch = _ref11.dispatch,
+        state = _ref11.state;
     var Registry = state.contracts.Registry;
 
     return Registry.methods.ownerToUsername(state.account).call().then(web3.utils.hexToUtf8).then(function (username) {
@@ -33986,9 +34046,9 @@ var actions = {
       return dispatch("setBalance");
     });
   },
-  setWeb3: function setWeb3(_ref10) {
-    var commit = _ref10.commit,
-        state = _ref10.state;
+  setWeb3: function setWeb3(_ref12) {
+    var commit = _ref12.commit,
+        state = _ref12.state;
 
     return new Promise(function (resolve, reject) {
       if (typeof web3 !== 'undefined') {
@@ -62513,6 +62573,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 
+var started = false;
 
 var start = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__home_carl_Projects_recdao_extension_node_modules_babel_runtime_regenerator___default.a.mark(function _callee() {
@@ -62521,70 +62582,71 @@ var start = function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            started = true;
+            _context.next = 3;
             return __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setWeb3");
 
-          case 2:
+          case 3:
             hasWeb3 = _context.sent;
 
             if (hasWeb3) {
-              _context.next = 5;
+              _context.next = 6;
               break;
             }
 
             return _context.abrupt('return');
 
-          case 5:
-            _context.next = 7;
+          case 6:
+            _context.next = 8;
             return __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setNetwork");
 
-          case 7:
+          case 8:
             network = _context.sent;
 
             if ([__WEBPACK_IMPORTED_MODULE_3__constants_json__["NETWORKS"].RINKEBY, __WEBPACK_IMPORTED_MODULE_3__constants_json__["NETWORKS"].OTHER].includes(network)) {
-              _context.next = 10;
+              _context.next = 11;
               break;
             }
 
             return _context.abrupt('return');
 
-          case 10:
+          case 11:
             __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setContracts");
-            _context.next = 13;
+            _context.next = 14;
             return __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setDecimals");
 
-          case 13:
-            _context.next = 15;
+          case 14:
+            _context.next = 16;
             return setDefaultAccount();
 
-          case 15:
+          case 16:
             defaultAccount = _context.sent;
 
             if (!defaultAccount) {
-              _context.next = 21;
+              _context.next = 22;
               break;
             }
 
-            _context.next = 19;
+            _context.next = 20;
             return __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setAllowance");
 
-          case 19:
-            _context.next = 21;
+          case 20:
+            _context.next = 22;
             return __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */].dispatch("setBalance");
 
-          case 21:
+          case 22:
             styleOverrides();
             mountTipper();
             preparePostScores();
             prepareCommentScores();
-            _context.next = 27;
+            _context.next = 28;
             return prepareUsers();
 
-          case 27:
+          case 28:
             poll();
             setInterval(poll, 2000);
 
-          case 29:
+          case 30:
           case 'end':
             return _context.stop();
         }
@@ -62599,7 +62661,17 @@ var start = function () {
 
 window.vuexStore = __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */];
 
-start();
+if (document.visibilityState == "visible") {
+  start();
+} else {
+  document.addEventListener('visibilitychange', handleVisibilityChange, false);
+}
+
+function handleVisibilityChange() {
+  if (!started && document.visibilityState == "visible") {
+    start();
+  }
+}
 
 function styleOverrides() {
   var styles = document.createElement('style');
