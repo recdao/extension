@@ -6,6 +6,7 @@ import bases from 'bases';
 import { NETWORKS } from './constants.json';
 import RegistryArtifacts from 'artifacts/Registry.json';
 import TokenArtifacts from 'artifacts/Token.json';
+import ContentDAOArtifacts from 'artifacts/ContentDAO.json';
 import ContentScoreArtifacts from 'artifacts/ContentScore.json';
 import TipperArtifacts from 'artifacts/Tipper.json';
 
@@ -13,19 +14,17 @@ Vue.use(Vuex)
 
 const state = {
   account: null,
-  allowance: 0,
   balance: null,
   blockNum: null,
   contracts: {},
   decimals: null,
+  market: null,
   network: null,
   posts: {},
-  tip: {},
-  tipContentType: null,
-  tipContentUrl: null,
-  tipId: null,
-  tipOpen: false,
-  tipRecipient: null,
+  tip: null,
+  tipAllowance: 0,
+  stakeAllowance: 0,
+  popup: false,
   username: null,
   web3: null
 }
@@ -60,13 +59,19 @@ const actions = {
     console.log("setAccount")
     commit("SET_ACCOUNT", account);
     if(!!account) {
-      await dispatch("setAllowance");
-      return dispatch("setUsername");
+      await dispatch("setBalance");
+      await dispatch("setTipAllowance");
+      await dispatch("setStakeAllowance");
+      return await dispatch("setUsername");
     }
   },
-  setAllowance ({commit, dispatch, state}) {
+  setTipAllowance ({commit, dispatch, state}) {
     let {Token, Tipper} = state.contracts;
-    return Token.methods.allowance(state.account, Tipper._address).call().then(res=>commit("SET_ALLOWANCE", res/Math.pow(10, state.decimals)));
+    return Token.methods.allowance(state.account, Tipper._address).call().then(res=>commit("SET_TIP_ALLOWANCE", res/Math.pow(10, state.decimals)));
+  },
+  setStakeAllowance ({commit, dispatch, state}) {
+    let {Token, ContentDAO} = state.contracts;
+    return Token.methods.allowance(state.account, ContentDAO._address).call().then(res=>commit("SET_STAKE_ALLOWANCE", res/Math.pow(10, state.decimals)));
   },
   setDecimals ({ commit, state }) {
     let {Token} = state.contracts;
@@ -77,7 +82,7 @@ const actions = {
     return Token.methods.balanceOf(state.account).call().then(res=>commit("SET_BALANCE", res/Math.pow(10, state.decimals)));
   },
   setContracts ({commit, dispatch, state}) {
-    let contracts = [ContentScoreArtifacts, TokenArtifacts, RegistryArtifacts, TipperArtifacts].reduce((prev, artifacts)=>{
+    let contracts = [ContentDAOArtifacts, ContentScoreArtifacts, TokenArtifacts, RegistryArtifacts, TipperArtifacts].reduce((prev, artifacts)=>{
       prev[artifacts.contractName] = new web3.eth.Contract(artifacts.abi, artifacts.networks["4"].address);
       return prev;
     }, {});
