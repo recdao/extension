@@ -11,7 +11,7 @@
         <div class="arrow up" v-on:click.stop="vote(1)"></div>
         <div class="arrow down" v-on:click.stop="vote(2)"></div>
       </div>
-      <button v-on:click="tipOpen">Tip</button>
+      <button v-on:click="popup">Tip</button>
     </div>
   </span>
 </template>
@@ -45,13 +45,19 @@ export default {
     ContentScore(){ return this.$store.state.contracts.ContentScore; }
   },
   methods: {
-    tipOpen(){
+    popup(){
       console.log(this.id);
-      this.$store.commit("SET_TIP_CONTENT_TYPE", 1);
-      this.$store.commit("SET_TIP_ID", this.id);
-      this.$store.commit("SET_TIP_RECIPIENT", this.author);
-      this.$store.commit("SET_TIP_CONTENT_URL", this.url);
-      this.$store.commit("SET_TIP_OPEN", true);
+      this.$store.commit("SET_TIP", {
+        contentType: 1,
+        id: this.id,
+        recipient: this.author,
+        contentUrl: this.url
+      });
+      // this.$store.commit("SET_TIP_CONTENT_TYPE", 1);
+      // this.$store.commit("SET_TIP_ID", this.id);
+      // this.$store.commit("SET_TIP_RECIPIENT", this.author);
+      // this.$store.commit("SET_TIP_CONTENT_URL", this.url);
+      this.$store.commit("SET_POPUP", true);
     },
     vote(prefId){
       console.log(typeof prefId)

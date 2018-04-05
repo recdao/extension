@@ -3,7 +3,7 @@ import store from './store';
 import { NETWORKS } from './constants.json';
 import PostScore from './components/PostScore';
 import CommentScore from './components/CommentScore';
-import Tip from './components/Tip';
+import Popup from './components/Popup';
 import bases from 'bases';
 import * as unique from 'array-unique';
 import * as Promise from 'bluebird';
@@ -17,10 +17,9 @@ const start = async () => {
   if(![NETWORKS.RINKEBY, NETWORKS.OTHER].includes(network)) return;
   store.dispatch("setContracts");
   await store.dispatch("setDecimals");
-  let defaultAccount = await setDefaultAccount();
+  let defaultAccount = await getDefaultAccount();
   if(defaultAccount){
-    await store.dispatch("setAllowance");
-    await store.dispatch("setBalance");
+    await store.dispatch("setAccount", defaultAccount)
   }
   styleOverrides();
   mountTipper();
@@ -58,7 +57,7 @@ function mountTipper(){
   let div = document.createElement('div');
   document.body.appendChild(div);
   const tipper = new Vue({
-    ...Tip,
+    ...Popup,
     store,
     propsData: {}
   })
@@ -127,12 +126,9 @@ async function prepareUsers(){
   });
 }
 
-async function setDefaultAccount(){
+async function getDefaultAccount(){
   return web3.eth.getAccounts()
-    .then(accounts=>{
-      store.dispatch("setAccount", accounts[0])
-      return accounts[0];
-    });
+    .then(accounts=>accounts[0]);
 }
 
 function poll(){

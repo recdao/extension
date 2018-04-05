@@ -12,8 +12,8 @@
         <div class="score" style="display: block; white-space: nowrap;">{{score}} / {{karmaScore}}</div>
         <div class="arrow down" v-on:click.stop="vote(2)"></div>
       </div>
-      <button v-on:click="tipOpen">Tip</button>
-      <button v-if="!marketEnded" v-on:click="stake">Stake</button>
+      <button v-on:click="popupTip">Tip</button>
+      <button :disabled="marketEnded" v-on:click="popupStake" :style="stakeStyle">Stake</button>
     </div>
   </div>
 </template>
@@ -52,18 +52,51 @@ export default {
     allowance(){ return this.$store.state.allowance; },
     // redditId(){ return bases.toBase36(this.$store.state.tipId); },
     blockNum(){ return this.$store.state.blockNum; },
-    decimals(){ return this.$store.state.decimals; },
     ContentDAO(){ return this.$store.state.contracts.ContentDAO; },
-    ContentScore(){ return this.$store.state.contracts.ContentScore; }
+    ContentScore(){ return this.$store.state.contracts.ContentScore; },
+    decimals(){ return this.$store.state.decimals; },
+    stakeStyle(){
+      let color = {true:"#f44336", false: "#4caf50"};
+      return {
+        marginLeft: "1rem",
+        backgroundColor: color[this.marketLiked] || ""
+      }
+    }
   },
   methods: {
-    tipOpen(){
+    popupTip(){
       console.log(this.id, bases.toBase36(this.id));
-      this.$store.commit("SET_TIP_CONTENT_TYPE", 0);
-      this.$store.commit("SET_TIP_ID", this.id);
-      this.$store.commit("SET_TIP_RECIPIENT", this.author);
-      this.$store.commit("SET_TIP_CONTENT_URL", this.url);
-      this.$store.commit("SET_TIP_OPEN", true);
+      this.$store.commit("SET_TIP", {
+        contentType: 0,
+        id: this.id,
+        recipient: this.author,
+        contentUrl: this.url
+      });
+      // this.$store.commit("SET_TIP_CONTENT_TYPE", 0);
+      // this.$store.commit("SET_TIP_ID", this.id);
+      // this.$store.commit("SET_TIP_RECIPIENT", this.author);
+      // this.$store.commit("SET_TIP_CONTENT_URL", this.url);
+      this.$store.commit("SET_POPUP", true);
+    },
+    popupStake(){
+      console.log(this.id, bases.toBase36(this.id));
+      this.$store.commit("SET_MARKET", {
+        id: this.id,
+        liked: this.marketLiked,
+        stage: this.marketStage,
+        ended: this.marketEnded,
+        stake: this.marketStake,
+        total: this.marketTotal,
+        startedAt: this.marketStartedAt,
+        track: this.marketTrack,
+        feePaid: this.marketFeePaid,
+        voted: this.marketVoted,
+      });
+      // this.$store.commit("SET_TIP_CONTENT_TYPE", 0);
+      // this.$store.commit("SET_TIP_ID", this.id);
+      // this.$store.commit("SET_TIP_RECIPIENT", this.author);
+      // this.$store.commit("SET_TIP_CONTENT_URL", this.url);
+      this.$store.commit("SET_POPUP", true);
     },
     vote(prefId){
       // console.log(typeof prefId)
