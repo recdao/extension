@@ -13,7 +13,7 @@
         <div class="arrow down" v-on:click.stop="vote(2)"></div>
       </div>
       <button v-on:click="popupTip">Tip</button>
-      <button :disabled="marketEnded" v-on:click="popupStake" :style="stakeStyle">Stake</button>
+      <button :disabled="!market || market.ended" v-on:click="popupStake" :style="stakeStyle">Stake</button>
     </div>
   </div>
 </template>
@@ -36,15 +36,7 @@ export default {
       active: null,
       karmaScore: 0,
       score: 0,
-      marketStage: null,
-      marketEnded: null,
-      marketLiked: null,
-      marketStake: null,
-      marketTotal: null,
-      marketStartedAt: null,
-      marketTrack: null,
-      marketFeePaid: null,
-      marketVoted: null,
+      market: null
     }
   },
   computed: {
@@ -72,30 +64,11 @@ export default {
         recipient: this.author,
         contentUrl: this.url
       });
-      // this.$store.commit("SET_TIP_CONTENT_TYPE", 0);
-      // this.$store.commit("SET_TIP_ID", this.id);
-      // this.$store.commit("SET_TIP_RECIPIENT", this.author);
-      // this.$store.commit("SET_TIP_CONTENT_URL", this.url);
       this.$store.commit("SET_POPUP", true);
     },
     popupStake(){
       console.log(this.id, bases.toBase36(this.id));
-      this.$store.commit("SET_MARKET", {
-        id: this.id,
-        liked: this.marketLiked,
-        stage: this.marketStage,
-        ended: this.marketEnded,
-        stake: this.marketStake,
-        total: this.marketTotal,
-        startedAt: this.marketStartedAt,
-        track: this.marketTrack,
-        feePaid: this.marketFeePaid,
-        voted: this.marketVoted,
-      });
-      // this.$store.commit("SET_TIP_CONTENT_TYPE", 0);
-      // this.$store.commit("SET_TIP_ID", this.id);
-      // this.$store.commit("SET_TIP_RECIPIENT", this.author);
-      // this.$store.commit("SET_TIP_CONTENT_URL", this.url);
+      this.$store.commit("SET_MARKET", this.market);
       this.$store.commit("SET_POPUP", true);
     },
     vote(prefId){
@@ -118,23 +91,26 @@ export default {
       let market = await this.ContentDAO.methods.getPost(idBase10).call({from: this.account});
       let stage = parseInt(market.stage);
       if(stage) {
-        this.marketStage = stage;
-        this.marketEnded = market.ended;
-        this.marketFeePaid = market.feePaid;
-        this.marketLiked = market.liked;
-        this.marketStake = {
-          false: parseInt(market.stakeDown)/Math.pow(10, this.decimals),
-          true: parseInt(market.stakeUp)/Math.pow(10, this.decimals)
+        this.market = {
+          id: this.id,
+          stage,
+          ended: market.ended,
+          feePaid: market.feePaid,
+          liked: market.liked,
+          stake: {
+            false: parseInt(market.stakeDown)/Math.pow(10, this.decimals),
+            true: parseInt(market.stakeUp)/Math.pow(10, this.decimals)
+          },
+          total: {
+            false: parseInt(market.totalDown)/Math.pow(10, this.decimals),
+            true: parseInt(market.totalUp)/Math.pow(10, this.decimals)
+          },
+          startedAt: parseInt(market.startedAt),
+          track: parseInt(market.track),
+          voted: market.voted,
         };
-        this.marketTotal = {
-          false: parseInt(market.totalDown)/Math.pow(10, this.decimals),
-          true: parseInt(market.totalUp)/Math.pow(10, this.decimals)
-        };
-        this.marketStartedAt = parseInt(market.startedAt);
-        this.marketTrack = parseInt(market.track);
-        this.marketVoted = market.voted;
       } else {
-        this.marketStage = stage;
+        this.market = { id: this.id, stage };
       }
     }
   },

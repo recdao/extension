@@ -12,9 +12,9 @@
         The minimum stake to open this market is 10 REC.
       </p>
       <p v-else>
-        This market is currently <span style="font-weight: bold;">{{market.liked ? "supported" : "rejected"}}</span> and needs stakes amounting to {{2*market.total[market.liked] - market.total[!market.liked]}} REC to flip.
+        This market is currently <span style="font-weight: bold;">{{market.liked ? "supported" : "rejected"}}</span> and needs stakes amounting to {{toFlip}} REC to flip.
       </p>
-      <input type="number" v-model.number="amount" style="width: 5rem;" /> REC
+      <input type="number" v-model.number="stake" style="width: 5rem;" /> REC
       <p v-if="allowance < amount" style="margin: 0.25rem 0;">To send {{amount}} {{token}} you need to allow the RECDAO Tipper contract to transfer at least {{amount}} on your behalf.</p>
       <p style="margin: 0.25rem 0;">The smart contract is currently allowed to transfer {{allowance}} REC.</p>
       <input type="number" v-model.number="allowanceInput" style="width: 5rem;" />
@@ -39,7 +39,7 @@ export default {
   },
   data(){
     return {
-      amount: 10,
+      amount: null,
       newAllowance: null
     }
   },
@@ -51,6 +51,11 @@ export default {
       get(){ return this.newAllowance !== null ? this.newAllowance : this.$store.state.stakeAllowance; },
       set(value){ this.newAllowance = value; }
     },
+    stake: {
+      get(){ return this.amount !== null ? this.amount : this.market.stage ? this.toFlip : 10 },
+      set(value){ this.amount = value; }
+    },
+    toFlip(){ return 2*this.market.total[this.market.liked] - this.market.total[!this.market.liked]; },
     blockNum(){ return this.$store.state.blockNum; },
     decimals(){ return this.$store.state.decimals; },
     Token(){ return this.$store.state.contracts.Token; },
@@ -60,19 +65,20 @@ export default {
   },
   methods: {
     async doStake(vote){
-      console.log(this.market);
-      if(this.amount > this.balance) {
-        alert(`You cannot stake an amount (${this.amount}) greater than your REC balance (${this.balance}).`);
+      console.log(this.market, this.stake);
+      if(this.stake > this.balance) {
+        alert(`You cannot stake an amount (${this.stake}) greater than your REC balance (${this.balance}).`);
         return;
       }
-      if(this.amount > this.allowance) {
-        alert(`Please increase your allowance to at least ${this.amount}.`);
+      if(this.stake > this.allowance) {
+        alert(`Please increase your allowance to at least ${this.stake}.`);
         return;
       }
-      let args = [bases.fromBase36(this.market.id), vote, this.amount*Math.pow(10, this.decimals)]
+      let args = [bases.fromBase36(this.market.id), vote, this.stake*Math.pow(10, this.decimals)]
       console.log(args)
       // this.$store.dispatch("watch", this.post);
       let tx = await this.ContentDAO.methods.stake(...args).send({from: this.account, gas: 250000});
+      await this.$store.dispatch("syncActiveMarket");
     },
     async updateAllowance(){
       console.log(this.newAllowance)

@@ -113,30 +113,36 @@ const actions = {
         }
       });
   },
-  async syncPost ({ commit, state }, id) {
+  async syncActiveMarket ({ commit, state }) {
     let {ContentDAO} = state.contracts;
+    let id = state.market.id;
+    if(!id) return;
     let idBase10 = bases.fromBase36(id);
-    let p = await ContentDAO.methods.getPost(idBase10).call({from: state.account});
-    let stage = parseInt(p.stage);
+    let market = await ContentDAO.methods.getPost(idBase10).call({from: state.account});
+    if(id !== state.market.id) {
+      console.warn(`market has changed, disregarding ${id}`);
+      return;
+    }
+    let stage = parseInt(market.stage);
     if(stage) {
-      let post = Object.assign({
+      commit("SET_MARKET", {
+        id: state.market.id,
         stage,
-        ended: p.ended,
-        feePaid: p.feePaid,
-        liked: p.liked,
+        ended: market.ended,
+        feePaid: market.feePaid,
+        liked: market.liked,
         stake: {
-          false: parseInt(p.stakeDown)/Math.pow(10, state.decimals),
-          true: parseInt(p.stakeUp)/Math.pow(10, state.decimals)
+          false: parseInt(market.stakeDown)/Math.pow(10, state.decimals),
+          true: parseInt(market.stakeUp)/Math.pow(10, state.decimals)
         },
         total: {
-          false: parseInt(p.totalDown)/Math.pow(10, state.decimals),
-          true: parseInt(p.totalUp)/Math.pow(10, state.decimals)
+          false: parseInt(market.totalDown)/Math.pow(10, state.decimals),
+          true: parseInt(market.totalUp)/Math.pow(10, state.decimals)
         },
-        startedAt: parseInt(p.startedAt),
-        track: parseInt(p.track),
-        voted: p.voted,
-      }, state.posts[id]);
-      commit("SET_POST", post);
+        startedAt: parseInt(market.startedAt),
+        track: parseInt(market.track),
+        voted: market.voted,
+      });
     }
   },
   setUsername ({ commit, dispatch, state }) {
