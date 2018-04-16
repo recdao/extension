@@ -108,6 +108,7 @@ export default {
           startedAt: parseInt(market.startedAt),
           track: parseInt(market.track),
           voted: market.voted,
+          contentUrl: this.url
         };
       } else {
         this.market = { id: this.id, stage };

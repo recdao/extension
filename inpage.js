@@ -35696,7 +35696,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                     },
                     startedAt: parseInt(market.startedAt),
                     track: parseInt(market.track),
-                    voted: market.voted
+                    voted: market.voted,
+                    contentUrl: this.url
                   };
                 } else {
                   this.market = { id: this.id, stage: stage };
@@ -51703,17 +51704,37 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('h3', [_vm._v("Staking")]), _vm._v(" "), (_vm.market.ended) ? _c('p', [_vm._v("\n    This market has ended. For now, please use the "), _c('a', {
+  return _c('div', [_c('h3', [_vm._v("Staking")]), _vm._v(" "), (_vm.market.ended) ? _c('p', [_vm._v("\n    This market ("), _c('a', {
+    attrs: {
+      "href": ("http://www.reddit.com" + (_vm.market.contentUrl)),
+      "target": "_blank"
+    }
+  }, [_vm._v(_vm._s(_vm.market.id))]), _vm._v(") has ended. For now, please use the "), _c('a', {
     attrs: {
       "target": "_blank",
       "href": "http://curator.recdao.org:3000"
     }
-  }, [_vm._v("main dapp")]), _vm._v(" for withdrawing.\n  ")]) : (_vm.market.stage === 2) ? _c('p', [_vm._v("\n    This market is in adjudication. For now, please use the "), _c('a', {
+  }, [_vm._v("main dapp")]), _vm._v(" for withdrawing.\n  ")]) : (_vm.market.stage === 2) ? _c('p', [_vm._v("\n    This market ("), _c('a', {
+    attrs: {
+      "href": ("http://www.reddit.com" + (_vm.market.contentUrl)),
+      "target": "_blank"
+    }
+  }, [_vm._v(_vm._s(_vm.market.id))]), _vm._v(") is in adjudication. For now, please use the "), _c('a', {
     attrs: {
       "target": "_blank",
       "href": "http://curator.recdao.org:3000"
     }
-  }, [_vm._v("main dapp")]), _vm._v(" to adjudicate this market.\n  ")]) : _c('div', [(_vm.market.stage === 0) ? _c('p', [_vm._v("\n      The minimum stake to open this market is 10 REC.\n    ")]) : _c('p', [_vm._v("\n      This market is currently "), _c('span', {
+  }, [_vm._v("main dapp")]), _vm._v(" to adjudicate this market.\n  ")]) : _c('div', [(_vm.market.stage === 0) ? _c('p', [_vm._v("\n      The minimum stake to open this market ("), _c('a', {
+    attrs: {
+      "href": ("http://www.reddit.com" + (_vm.market.contentUrl)),
+      "target": "_blank"
+    }
+  }, [_vm._v(_vm._s(_vm.market.id))]), _vm._v(") is 10 REC.\n    ")]) : _c('p', [_vm._v("\n      This market is ("), _c('a', {
+    attrs: {
+      "href": ("http://www.reddit.com" + (_vm.market.contentUrl)),
+      "target": "_blank"
+    }
+  }, [_vm._v(_vm._s(_vm.market.id))]), _vm._v(") currently "), _c('span', {
     staticStyle: {
       "font-weight": "bold"
     }

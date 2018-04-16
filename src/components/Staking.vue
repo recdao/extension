@@ -2,17 +2,17 @@
   <div>
     <h3>Staking</h3>
     <p v-if="market.ended">
-      This market has ended. For now, please use the <a target="_blank" href="http://curator.recdao.org:3000">main dapp</a> for withdrawing.
+      This market (<a :href="`http://www.reddit.com${market.contentUrl}`" target="_blank">{{market.id}}</a>) has ended. For now, please use the <a target="_blank" href="http://curator.recdao.org:3000">main dapp</a> for withdrawing.
     </p>
     <p v-else-if="market.stage === 2">
-      This market is in adjudication. For now, please use the <a target="_blank" href="http://curator.recdao.org:3000">main dapp</a> to adjudicate this market.
+      This market (<a :href="`http://www.reddit.com${market.contentUrl}`" target="_blank">{{market.id}}</a>) is in adjudication. For now, please use the <a target="_blank" href="http://curator.recdao.org:3000">main dapp</a> to adjudicate this market.
     </p>
     <div v-else>
       <p v-if="market.stage === 0">
-        The minimum stake to open this market is 10 REC.
+        The minimum stake to open this market (<a :href="`http://www.reddit.com${market.contentUrl}`" target="_blank">{{market.id}}</a>) is 10 REC.
       </p>
       <p v-else>
-        This market is currently <span style="font-weight: bold;">{{market.liked ? "supported" : "rejected"}}</span> and needs stakes amounting to {{toFlip}} REC to flip.
+        This market is (<a :href="`http://www.reddit.com${market.contentUrl}`" target="_blank">{{market.id}}</a>) currently <span style="font-weight: bold;">{{market.liked ? "supported" : "rejected"}}</span> and needs stakes amounting to {{toFlip}} REC to flip.
       </p>
       <input type="number" v-model.number="stake" style="width: 5rem;" /> REC
       <p v-if="allowance < amount" style="margin: 0.25rem 0;">To send {{amount}} {{token}} you need to allow the RECDAO Tipper contract to transfer at least {{amount}} on your behalf.</p>
