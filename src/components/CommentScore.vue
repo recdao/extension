@@ -5,7 +5,7 @@
     v-on:mouseover="active = true; over = true"
     v-on:mouseout="over = false">
     <logo :height="12" style="position: relative; top: 2px;" />
-    <span v-if="active">{{score}}</span>
+    <span v-if="active">{{score}} / {{karmaRatio}}%</span>
     <div v-if="over" style="display: flex; align-items: center; padding: 0.25rem 1rem; position: absolute; left: 100%; top: 0; background-color: white; z-index: 100; border: 1px solid black;">
       <div style="margin-right: 0.5rem;">
         <div class="arrow up" v-on:click.stop="vote(1)"></div>
@@ -32,6 +32,8 @@ export default {
   data(){
     return {
       active: null,
+      karmaScore: 0,
+      karmaRatio: 0,
       over: null,
       score: 0
     }
@@ -73,7 +75,10 @@ export default {
       this.ContentScore.methods.commentScores(bases.fromBase36(this.id)).call()
         .then(scores=>{
           this.score = scores.numUp - scores.numDown;
-          // this.score = this.scoreUp - this.scoreDown;
+          let karmaUp = parseInt(scores.scoreUp);
+          let karmaDown = parseInt(scores.scoreDown);
+          this.karmaScore = karmaUp - karmaDown;
+          this.karmaRatio = Math.round(karmaUp*100/(karmaUp + karmaDown)) || 0;
         })
         // .then(console.log)
         // .then(score=>this.score=score);

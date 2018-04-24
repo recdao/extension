@@ -35,6 +35,7 @@ export default {
     return {
       active: null,
       karmaScore: 0,
+      karmaRatio: 0,
       score: 0,
       market: null
     }
@@ -84,7 +85,10 @@ export default {
     async getScore(){
       let scores = await this.ContentScore.methods.postScores(bases.fromBase36(this.id)).call();
       this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
-      this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
+      let karmaUp = parseInt(scores.scoreUp);
+      let karmaDown = parseInt(scores.scoreDown);
+      this.karmaScore = karmaUp - karmaDown;
+      this.karmaRatio = Math.round(karmaUp*100/(karmaUp + karmaDown)) || 0;
     },
     async syncMarket () {
       let idBase10 = bases.fromBase36(this.id);

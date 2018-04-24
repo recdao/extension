@@ -35366,6 +35366,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   data: function data() {
     return {
       active: null,
+      karmaScore: 0,
+      karmaRatio: 0,
       over: null,
       score: 0
     };
@@ -35416,7 +35418,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
       this.ContentScore.methods.commentScores(__WEBPACK_IMPORTED_MODULE_1_bases___default.a.fromBase36(this.id)).call().then(function (scores) {
         _this.score = scores.numUp - scores.numDown;
-        // this.score = this.scoreUp - this.scoreDown;
+        var karmaUp = parseInt(scores.scoreUp);
+        var karmaDown = parseInt(scores.scoreDown);
+        _this.karmaScore = karmaUp - karmaDown;
+        _this.karmaRatio = Math.round(karmaUp * 100 / (karmaUp + karmaDown)) || 0;
       });
       // .then(console.log)
       // .then(score=>this.score=score);
@@ -35575,6 +35580,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     return {
       active: null,
       karmaScore: 0,
+      karmaRatio: 0,
       score: 0,
       market: null
     };
@@ -35636,7 +35642,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     },
     getScore: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__home_carl_Projects_recdao_extension_node_modules_babel_runtime_regenerator___default.a.mark(function _callee() {
-        var scores;
+        var scores, karmaUp, karmaDown;
         return __WEBPACK_IMPORTED_MODULE_0__home_carl_Projects_recdao_extension_node_modules_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35648,9 +35654,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 scores = _context.sent;
 
                 this.score = parseInt(scores.numUp) - parseInt(scores.numDown);
-                this.karmaScore = parseInt(scores.scoreUp) - parseInt(scores.scoreDown);
+                karmaUp = parseInt(scores.scoreUp);
+                karmaDown = parseInt(scores.scoreDown);
 
-              case 5:
+                this.karmaScore = karmaUp - karmaDown;
+                this.karmaRatio = Math.round(karmaUp * 100 / (karmaUp + karmaDown)) || 0;
+
+              case 8:
               case 'end':
                 return _context.stop();
             }
@@ -51648,7 +51658,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "height": 12
     }
-  }), _vm._v(" "), (_vm.active) ? _c('span', [_vm._v(_vm._s(_vm.score))]) : _vm._e(), _vm._v(" "), (_vm.over) ? _c('div', {
+  }), _vm._v(" "), (_vm.active) ? _c('span', [_vm._v(_vm._s(_vm.score) + " / " + _vm._s(_vm.karmaRatio) + "%")]) : _vm._e(), _vm._v(" "), (_vm.over) ? _c('div', {
     staticStyle: {
       "display": "flex",
       "align-items": "center",
